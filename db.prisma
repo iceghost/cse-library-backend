@@ -8,26 +8,26 @@ generator client {
 }
 
 model Student {
-    email     String      @id
-    studentId Int         @unique
-    fname     String
-    lname     String
+    email    String      @id
+    id       Int         @unique
+    fname    String
+    lname    String
     // additional infos
-    birthday  DateTime?
-    phone     String?
+    birthday DateTime?
+    phone    String?
     // additional login method
-    password  String?
+    password String?
     // admin subclass
-    admin     Admin?
+    admin    Admin?
     // activity logs
-    LoggedIn  SignIn[]
-    Reception Reception[]
+    signIns  SignIn[]
+    entries  Reception[]
 }
 
 model Admin {
     // student id of admin
-    studentId  Int         @id
-    student    Student     @relation(fields: [studentId], references: [studentId])
+    id         Int         @id
+    student    Student     @relation(fields: [id], references: [id])
     // created logs
     receptions Reception[]
 }
@@ -44,9 +44,10 @@ model Reception {
     createdAt DateTime @id
     log       Log      @relation(fields: [createdAt], references: [createdAt])
     studentId Int
-    student   Student  @relation(fields: [studentId], references: [studentId])
+    student   Student  @relation(fields: [studentId], references: [id])
+    // the one in charge of card swiping
     adminId   Int
-    admin     Admin    @relation(fields: [adminId], references: [studentId])
+    admin     Admin    @relation(fields: [adminId], references: [id])
     isCheckIn Boolean
 }
 
@@ -54,6 +55,6 @@ model Reception {
 model SignIn {
     createdAt DateTime @id
     log       Log      @relation(fields: [createdAt], references: [createdAt])
-    studentId Int
-    student   Student  @relation(fields: [studentId], references: [studentId])
+    id        Int
+    student   Student  @relation(fields: [id], references: [id])
 }
