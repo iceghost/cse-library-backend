@@ -15,9 +15,13 @@ const prisma = new PrismaClient();
 async function checkIn(student, admin) {
   await prisma.log.create({
     data: {
-      studentId: student.studentId,
-      adminId: admin.studentId,
-      goingIn: true,
+      reception: {
+        create: {
+          studentId: student.studentId,
+          adminId: admin.studentId,
+          isCheckIn: true,
+        },
+      },
     },
   });
 }
@@ -29,9 +33,13 @@ async function checkIn(student, admin) {
 async function checkOut(student, admin) {
   await prisma.log.create({
     data: {
-      studentId: student.studentId,
-      adminId: admin.studentId,
-      goingIn: false,
+      reception: {
+        create: {
+          studentId: student.studentId,
+          adminId: admin.studentId,
+          isCheckIn: false,
+        },
+      },
     },
   });
 }

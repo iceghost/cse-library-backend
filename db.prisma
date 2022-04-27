@@ -8,8 +8,8 @@ generator client {
 }
 
 model Student {
-    email     String    @id
-    studentId Int       @unique
+    email     String      @id
+    studentId Int         @unique
     fname     String
     lname     String
     // additional infos
@@ -20,25 +20,40 @@ model Student {
     // admin subclass
     admin     Admin?
     // activity logs
-    logs      Log[]
+    LoggedIn  SignIn[]
+    Reception Reception[]
 }
 
 model Admin {
     // student id of admin
-    studentId Int     @id
-    student   Student @relation(fields: [studentId], references: [studentId])
+    studentId  Int         @id
+    student    Student     @relation(fields: [studentId], references: [studentId])
     // created logs
-    logs      Log[]
+    receptions Reception[]
 }
 
 model Log {
-    createdAt DateTime @id @default(now())
-    // the student
+    createdAt DateTime   @id @default(now())
+    // what kind of event
+    reception Reception?
+    signIn    SignIn?
+}
+
+// checking in/out event
+model Reception {
+    createdAt DateTime @id
+    log       Log      @relation(fields: [createdAt], references: [createdAt])
     studentId Int
     student   Student  @relation(fields: [studentId], references: [studentId])
-    // the one in charge of checking in/out at that moment
     adminId   Int
     admin     Admin    @relation(fields: [adminId], references: [studentId])
-    // enter or leave
-    goingIn   Boolean
+    isCheckIn Boolean
+}
+
+// sign in event
+model SignIn {
+    createdAt DateTime @id
+    log       Log      @relation(fields: [createdAt], references: [createdAt])
+    studentId Int
+    student   Student  @relation(fields: [studentId], references: [studentId])
 }
