@@ -20,7 +20,6 @@ model Student {
     // admin subclass
     admin    Admin?
     // activity logs
-    signIns  SignIn[]
     entries  Reception[]
 }
 
@@ -32,29 +31,12 @@ model Admin {
     receptions Reception[]
 }
 
-model Log {
-    createdAt DateTime   @id @default(now())
-    // what kind of event
-    reception Reception?
-    signIn    SignIn?
-}
-
 // checking in/out event
 model Reception {
-    createdAt DateTime @id
-    log       Log      @relation(fields: [createdAt], references: [createdAt])
+    createdAt DateTime @id @default(now())
     studentId Int
     student   Student  @relation(fields: [studentId], references: [id])
     // the one in charge of card swiping
     adminId   Int
     admin     Admin    @relation(fields: [adminId], references: [id])
-    isCheckIn Boolean
-}
-
-// sign in event
-model SignIn {
-    createdAt DateTime @id
-    log       Log      @relation(fields: [createdAt], references: [createdAt])
-    id        Int
-    student   Student  @relation(fields: [id], references: [id])
 }

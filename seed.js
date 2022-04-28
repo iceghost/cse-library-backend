@@ -1,3 +1,4 @@
+// @ts-check
 // this script is used to pre-populate the database
 // see https://www.prisma.io/docs/guides/database/seed-database
 
@@ -10,7 +11,7 @@ async function main() {
     update: {},
     create: {
       email: 'khang@',
-      studentId: 1,
+      id: 1,
       fname: 'Khang',
       lname: 'ND',
       admin: {
@@ -24,7 +25,7 @@ async function main() {
     update: {},
     create: {
       email: 'nghi@',
-      studentId: 2,
+      id: 2,
       fname: 'Nghi',
       lname: 'NDP',
       admin: {
@@ -38,7 +39,7 @@ async function main() {
     update: {},
     create: {
       email: 'A@',
-      studentId: 3,
+      id: 3,
       fname: 'A',
       lname: 'NV',
     },
@@ -49,7 +50,7 @@ async function main() {
     update: {},
     create: {
       email: 'B@',
-      studentId: 4,
+      id: 4,
       fname: 'B',
       lname: 'NV',
     },
