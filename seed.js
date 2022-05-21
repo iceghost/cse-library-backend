@@ -7,11 +7,11 @@ const prisma = new PrismaClient();
 
 async function main() {
   const khang = await prisma.student.upsert({
-    where: { email: 'khang@' },
+    where: { email: 'khang.nguyenduycse@hcmut.edu.vn' },
     update: {},
     create: {
-      email: 'khang@',
-      id: 1,
+      email: 'khang.nguyenduycse@hcmut.edu.vn',
+      id: 5,
       fname: 'Khang',
       lname: 'ND',
       admin: {
