@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm install && npm run prisma:generate && npm run prisma:push && npm run prisma:seed",
+    "dev": "nodemon index.js",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:seed": "prisma db seed",
@@ -11,10 +12,14 @@
   },
   "dependencies": {
     "@prisma/client": "^3.13.0",
+    "express": "^4.18.1",
     "prisma": "^3.13.0"
   },
   "prisma": {
     "schema": "./db.prisma",
     "seed": "node ./seed.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
   }
 }
