@@ -5,6 +5,7 @@ const { verifyAdmin } = require('./auth/admin');
 const csrf = require('./auth/csrf');
 const { verify } = require('./auth/oauth');
 const { verifyEmail } = require('./auth/user');
+// const { promoteAdmin } = require('./db/admin');
 const { login } = require('./db/login');
 const app = express();
 
@@ -48,9 +49,17 @@ app.post('/users/:uid/recept', (req, res) => {
     res.send('recepted');
 });
 
-app.put('/admins/:uid', (req, res) => {
-    // TODO: add user as admin
-});
+// app.put('/admins/:uid', async (req, res) => {
+//     const uid = parseInt(req.params.uid);
+//     if (isNaN(uid)) {
+//         res.status(400);
+//         res.send('uid must be a number');
+//         return;
+//     }
+//     const admin = await promoteAdmin(uid);
+//     res.status(200);
+//     res.send(admin);
+// });
 
 app.listen(3000, () => {
     console.log(`Example app listening on http://localhost:3000`);
