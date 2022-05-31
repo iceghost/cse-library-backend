@@ -7,6 +7,7 @@ const { verify } = require('./auth/oauth');
 const { verifyEmail } = require('./auth/user');
 // const { promoteAdmin } = require('./db/admin');
 const { login } = require('./db/login');
+const { recept } = require('./db/recept');
 const app = express();
 
 app.use(express.static('public'));
@@ -44,9 +45,16 @@ app.get('/users/:uid', (req, res) => {
 // admin only zone
 app.use(verifyAdmin);
 
-app.post('/users/:uid/recept', (req, res) => {
-    // TODO: check-in/check-out user
-    res.send('recepted');
+app.post('/users/:uid/recept', async (req, res) => {
+    const uid = parseInt(req.params.uid);
+    if (isNaN(uid)) {
+        res.status(400);
+        res.send('uid must be a number');
+        return;
+    }
+    const reception = await recept(uid, req.body.user);
+    res.status(200);
+    res.send(reception);
 });
 
 // app.put('/admins/:uid', async (req, res) => {
