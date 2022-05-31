@@ -9,7 +9,7 @@ const { isAdmin } = require('../db/admin');
 async function verifyAdmin(req, res, next) {
     /** @type {import("@prisma/client").Student} */
     const user = req.body.user;
-    if (!isAdmin(user)) {
+    if (!(await isAdmin(user))) {
         res.status(401);
         res.send('admin only');
         return;
