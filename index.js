@@ -5,6 +5,9 @@ const { verifyAdmin } = require('./auth/admin');
 const csrf = require('./auth/csrf');
 const { verify } = require('./auth/oauth');
 const { verifyEmail } = require('./auth/user');
+const client = require('./db');
+const { blacklist } = require('./db');
+const blackList = require('./db/blacklist');
 // const { promoteAdmin } = require('./db/admin');
 const { login } = require('./db/login');
 const { recept } = require('./db/recept');
@@ -36,38 +39,68 @@ app.post('/login', csrf, async (req, res, next) => {
 // logged in only zone
 app.use(verifyEmail);
 
+// get the student who has just logged in
 app.get('/users/:uid', (req, res) => {
     // TODO: get user information?
     res.status(200);
     res.send(req.body.user);
 });
 
-// admin only zone
-app.use(verifyAdmin);
-
+// add a student with uid to the reception list
 app.post('/users/:uid/recept', async (req, res) => {
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
         res.status(400);
         res.send('uid must be a number');
         return;
+    } else if(client.student.findUnique({where: {id: uid}}) == null) {
+        res.status(400);
+        res.send('uid not found');
+        return;
     }
     const reception = await recept(uid, req.body.user);
+    console.log("REQ Body => ", req.body);
     res.status(200);
     res.send(reception);
 });
 
-// app.put('/admins/:uid', async (req, res) => {
-//     const uid = parseInt(req.params.uid);
-//     if (isNaN(uid)) {
-//         res.status(400);
-//         res.send('uid must be a number');
-//         return;
-//     }
-//     const admin = await promoteAdmin(uid);
-//     res.status(200);
-//     res.send(admin);
-// });
+// admin only zone
+app.use(verifyAdmin);
+
+app.get('/blacklist', async (req, res) => {
+    res.status(200);
+    res.send(await blackList.blackListGetAll());
+})
+
+
+    //admin add 1 student to blacklist or delete it from blacklist
+app.post('/admins/blacklist/:uid', async (req, res) => {
+    const uid = parseInt(req.params.uid);
+    if (isNaN(uid)) {
+        res.status(400);
+        res.send('uid must be a number');
+        return;
+    }
+    // const admin = await promoteAdmin(uid);
+    var blacklist;
+    var student = await blackList.blackListGetOne(uid)
+    if (student && uid === student.studentId) {
+      blacklist = blackList.blackListDeleteOne(uid)
+    } else {
+      blacklist = await blackList.blackListCreate(uid, req.body.user);
+    }
+    // const blacklist = await blackList.blackListDeleteAll();
+    console.log("Admin => ", req.body.user);
+    res.status(200);
+    res.send(blacklist);
+});
+
+app.delete('/admins/blacklist', async (req, res) => {
+    const blacklist = await blackList.blackListDeleteAll();
+    console.log("Admin => ", req.body.user);
+    res.status(200);
+    res.send(blacklist);
+})
 
 app.listen(3000, () => {
     console.log(`Example app listening on http://localhost:3000`);
