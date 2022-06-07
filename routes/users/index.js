@@ -21,7 +21,7 @@ userRoutes.post('/:uid/recept', async (req, res) => {
         res.status(400);
         res.send('uid must be a number');
         return;
-    } else if(uid === req.body.id) {
+    } else if(uid !== req.body.id) {
         res.status(400);
         res.send('uid not found');
         return;
