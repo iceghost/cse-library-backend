@@ -53,7 +53,7 @@ app.post('/users/:uid/recept', async (req, res) => {
         res.status(400);
         res.send('uid must be a number');
         return;
-    } else if(client.student.findUnique({where: {id: uid}}) == null) {
+    } else if(uid === req.body.id) {
         res.status(400);
         res.send('uid not found');
         return;
@@ -67,7 +67,8 @@ app.post('/users/:uid/recept', async (req, res) => {
 // admin only zone
 app.use(verifyAdmin);
 
-app.get('/blacklist', async (req, res) => {
+
+app.get('/admins/blacklist', async (req, res) => {
     res.status(200);
     res.send(await blackList.blackListGetAll());
 })
@@ -81,23 +82,38 @@ app.post('/admins/blacklist/:uid', async (req, res) => {
         res.send('uid must be a number');
         return;
     }
-    // const admin = await promoteAdmin(uid);
-    var blacklist;
-    var student = await blackList.blackListGetOne(uid)
-    if (student && uid === student.studentId) {
-      blacklist = blackList.blackListDeleteOne(uid)
+      var blacklist = await blackList.blackListCreate(uid);
+    // const blacklist = await blackList.blackListDeleteAll();
+    // console.log("Admin => ", req.body.user);
+    res.status(200);
+    res.send(blacklist);
+});
+
+app.delete('/admins/blacklist/:uid', async (req, res) => {
+  const uid = parseInt(req.params.uid);
+  if (isNaN(uid)) {
+      res.status(400);
+      res.send('uid must be a number');
+      return;
+  }
+  // const admin = await promoteAdmin(uid);
+  var blacklist;
+  var student = await blackList.blackListGetOne(uid)
+  if (student && uid === student.studentId) {
+      blacklist = await blackList.blackListDeleteOne(uid)
     } else {
-      blacklist = await blackList.blackListCreate(uid, req.body.user);
+        res.status(400);
+        res.send('student is not in the list');
     }
     // const blacklist = await blackList.blackListDeleteAll();
-    console.log("Admin => ", req.body.user);
+      console.log("After delete 1 stu ", blacklist);
     res.status(200);
     res.send(blacklist);
 });
 
 app.delete('/admins/blacklist', async (req, res) => {
     const blacklist = await blackList.blackListDeleteAll();
-    console.log("Admin => ", req.body.user);
+    // console.log("Admin => ", req.body.user);
     res.status(200);
     res.send(blacklist);
 })

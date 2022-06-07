@@ -4,15 +4,14 @@ const client = require('.');
 
 /**
  * @param {number} uid
- * @param {import('@prisma/client').Admin} admin
  * @returns {Promise<import('@prisma/client').Blacklist>}
  */
 
-async function blackListCreate(uid, admin) {
+async function blackListCreate(uid) {
     const blacklist = await client.blacklist.create({
         data: {
             studentId: uid,
-            adminId: admin.id,
+            expiredAt: null,      
         },
     });
 
@@ -23,6 +22,10 @@ async function blackListGetAll() {
     const blacklist = await client.blacklist.findMany({
         where: {},
     });
+
+    blacklist.filter(ele => {
+        return ele.expiredAt !== null || ele.expiredAt > ele.createdAt;
+        })
 
     return blacklist;
 }
@@ -37,20 +40,25 @@ async function blackListGetOne(id) {
     return the_student;
 }
 async function blackListDeleteOne (id) {
-    const blacklist = await client.blacklist.deleteMany({
+    const blacklist = await client.blacklist.findUnique({
         where: {
-            studentId: id,
+            studentId: id,     
         },
     });
 
+    blacklist.expiredAt = new Date ();
+    // console.log("blacklist", blacklist);
     return blacklist;
 }
 
 async function blackListDeleteAll() {
-    const blacklist = await client.blacklist.deleteMany({
+    const blacklist = await client.blacklist.findMany({
         where: {},
     });
 
+    for (let ele of blacklist) {
+        ele.expiredAt = new Date ();
+    }
     return blacklist;
 }
 

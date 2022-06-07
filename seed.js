@@ -41,20 +41,21 @@ async function main() {
     },
   });
 
-  dummy().map(async (temp) => {
-    prisma.student.upsert({
-      where: { email: `${temp}@` },
+  dummy().forEach(async (x) => {
+    const student = await prisma.student.upsert({
+      where: { email: `${x} @hcmut.edu.vn` },
       update: {},
       create: {
-        email: `${temp}@`,
-        id: temp.charCodeAt(0),
-        fname: temp,
-        lname: 'NV',
+        email: `${x} @hcmut.edu.vn`,
+        id: x.charCodeAt(0),
+        fname: `${x}`,
+        lname: `lname ${x}`,
+        admin: {},
       },
     });
   })
+      
 
-    // console.log("CCCC => ");
 }
 
 main()

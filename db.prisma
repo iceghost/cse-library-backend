@@ -29,8 +29,6 @@ model Admin {
     student    Student     @relation(fields: [id], references: [id])
     // created logs
     receptions Reception[]
-    // created blacklists: one admin can have many blacklists
-    blacklist  Blacklist[]
 }
 
 // checking in/out event
@@ -44,8 +42,7 @@ model Reception {
 }
 
 model Blacklist {
-    createdAt DateTime @default(now())
-    studentId Int      @id
-    adminId   Int
-    admin     Admin    @relation(fields: [adminId], references: [id])
+    createdAt DateTime  @default(now())
+    expiredAt DateTime?
+    studentId Int       @id
 }
