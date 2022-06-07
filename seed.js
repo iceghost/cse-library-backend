@@ -2,6 +2,13 @@
 // this script is used to pre-populate the database
 // see https://www.prisma.io/docs/guides/database/seed-database
 
+const dummy = () => {
+  const alpha = Array.from(Array(26)).map((_, i) => i + 65);
+  const alphabet = alpha.map((x) => String.fromCharCode(x));
+  console.log("alpha ", alphabet);
+  return alphabet;
+}
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -11,7 +18,7 @@ async function main() {
     update: {},
     create: {
       email: 'khang.nguyenduycse@hcmut.edu.vn',
-      id: 5,
+      id: 101,
       fname: 'Khang',
       lname: 'ND',
       admin: {
@@ -21,11 +28,11 @@ async function main() {
   });
 
   const nghi = await prisma.student.upsert({
-    where: { email: 'nghi@' },
+    where: { email: 'nghi.nguyen1805vt@hcmut.edu.vn' },
     update: {},
     create: {
-      email: 'nghi@',
-      id: 2,
+      email: 'nghi.nguyen1805vt@hcmut.edu.vn',
+      id: 100,
       fname: 'Nghi',
       lname: 'NDP',
       admin: {
@@ -34,27 +41,21 @@ async function main() {
     },
   });
 
-  const A = await prisma.student.upsert({
-    where: { email: 'A@' },
-    update: {},
-    create: {
-      email: 'A@',
-      id: 3,
-      fname: 'A',
-      lname: 'NV',
-    },
-  });
+  dummy().forEach(async (x) => {
+    const student = await prisma.student.upsert({
+      where: { email: `${x} @hcmut.edu.vn` },
+      update: {},
+      create: {
+        email: `${x} @hcmut.edu.vn`,
+        id: x.charCodeAt(0),
+        fname: `${x}`,
+        lname: `lname ${x}`,
+        admin: {},
+      },
+    });
+  })
+      
 
-  const B = await prisma.student.upsert({
-    where: { email: 'B@' },
-    update: {},
-    create: {
-      email: 'B@',
-      id: 4,
-      fname: 'B',
-      lname: 'NV',
-    },
-  });
 }
 
 main()

@@ -40,3 +40,9 @@ model Reception {
     adminId   Int
     admin     Admin    @relation(fields: [adminId], references: [id])
 }
+
+model Blacklist {
+    createdAt DateTime  @default(now())
+    expiredAt DateTime?
+    studentId Int       @id
+}
