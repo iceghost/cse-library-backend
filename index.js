@@ -108,7 +108,7 @@ app.delete('/admins/blacklist/:uid', async (req, res) => {
     // const blacklist = await blackList.blackListDeleteAll();
       console.log("After delete 1 stu ", blacklist);
     res.status(200);
-    res.send(blacklist);
+    res.send(client.blacklist);
 });
 
 app.delete('/admins/blacklist', async (req, res) => {

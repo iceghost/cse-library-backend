@@ -40,25 +40,27 @@ async function blackListGetOne(id) {
     return the_student;
 }
 async function blackListDeleteOne (id) {
-    const blacklist = await client.blacklist.findUnique({
+    const blacklist = await client.blacklist.updateMany({
         where: {
             studentId: id,     
         },
-    });
+        data: {
+            expiredAt: new Date (),
+        }
+    })
 
-    blacklist.expiredAt = new Date ();
+    
     // console.log("blacklist", blacklist);
     return blacklist;
 }
 
 async function blackListDeleteAll() {
-    const blacklist = await client.blacklist.findMany({
+    const blacklist = await client.blacklist.updateMany({
         where: {},
+        data: {
+            expiredAt: new Date (),
+        }
     });
-
-    for (let ele of blacklist) {
-        ele.expiredAt = new Date ();
-    }
     return blacklist;
 }
 
