@@ -5,9 +5,9 @@
 const dummy = () => {
   const alpha = Array.from(Array(26)).map((_, i) => i + 65);
   const alphabet = alpha.map((x) => String.fromCharCode(x));
-  console.log("alpha ", alphabet);
+  console.log('alpha ', alphabet);
   return alphabet;
-}
+};
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -41,21 +41,18 @@ async function main() {
     },
   });
 
-  dummy().forEach(async (x) => {
+  for (const x of dummy()) {
     const student = await prisma.student.upsert({
-      where: { email: `${x} @hcmut.edu.vn` },
+      where: { email: `${x}@hcmut.edu.vn` },
       update: {},
       create: {
-        email: `${x} @hcmut.edu.vn`,
+        email: `${x}@hcmut.edu.vn`,
         id: x.charCodeAt(0),
         fname: `${x}`,
         lname: `lname ${x}`,
-        admin: {},
       },
     });
-  })
-      
-
+  }
 }
 
 main()
