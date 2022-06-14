@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "checkJs": true,
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "$types": [
+                "./types/index.d.ts"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
