@@ -8,8 +8,8 @@ generator client {
 }
 
 model Student {
-    email    String      @id
-    id       Int         @unique
+    email    String    @id
+    id       Int       @unique
     fname    String
     lname    String
     // additional infos
@@ -19,30 +19,40 @@ model Student {
     password String?
     // admin subclass
     admin    Admin?
+
     // activity logs
-    entries  Reception[]
+    receptions         Reception[] @relation("student")
+    authoredReceptions Reception[] @relation("author")
+    blacklist          Blacklist?
 }
 
 model Admin {
     // student id of admin
-    id         Int         @id
-    student    Student     @relation(fields: [id], references: [id])
-    // created logs
-    receptions Reception[]
+    id      Int     @id
+    student Student @relation(fields: [id], references: [id])
+
+    authoredBlacklist Blacklist[]
 }
 
 // checking in/out event
 model Reception {
     createdAt DateTime @id @default(now())
     studentId Int
-    student   Student  @relation(fields: [studentId], references: [id])
-    // the one in charge of card swiping
-    adminId   Int
-    admin     Admin    @relation(fields: [adminId], references: [id])
+    student   Student  @relation("student", fields: [studentId], references: [id])
+    // the one in charge of card swiping.
+    authorId  Int
+    // one could self-recept, hence student not admin
+    author    Student  @relation("author", fields: [authorId], references: [id])
+    // seat number
+    seat      Int
 }
 
 model Blacklist {
     createdAt DateTime  @default(now())
     expiredAt DateTime?
     studentId Int       @id
+    student   Student   @relation(fields: [studentId], references: [id])
+    // one who issues this blacklist
+    authorId  Int
+    author    Admin     @relation(fields: [authorId], references: [id])
 }
