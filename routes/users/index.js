@@ -4,7 +4,7 @@ const userRoutes = express.Router();
 const client = require('../../db');
 
 // get the student who has just logged in
-userRoutes.get('/', (req, res) => {
+userRoutes.get('/user', (req, res) => {
     assertStudent(req.user);
     // TODO: get user information?
 
@@ -15,7 +15,7 @@ userRoutes.get('/', (req, res) => {
 });
 
 // add a student with uid to the reception list
-userRoutes.post('/:uid/checkin', async (req, res) => {
+userRoutes.post('/user/:uid/checkin', async (req, res) => {
     assertStudent(req.user);
 
     const uid = parseInt(req.params.uid);
@@ -57,7 +57,7 @@ userRoutes.post('/:uid/checkin', async (req, res) => {
 });
 
 // add a student with uid to the reception list
-userRoutes.post('/:uid/checkout', async (req, res) => {
+userRoutes.post('/user/:uid/checkout', async (req, res) => {
     assertStudent(req.user);
 
     const uid = parseInt(req.params.uid);
