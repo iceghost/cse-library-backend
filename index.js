@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
+app.use(require('cors')());
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,6 +20,7 @@ app.use(['/user', '/users'], require('./routes/user'));
 app.use('/blacklist', require('./routes/blacklist'));
 app.use(require('./auth/error_handler'));
 
-app.listen(3000, () => {
-    console.log(`Example app listening on http://localhost:3000`);
+const PORT = process.env['PORT'] || 8080;
+app.listen(PORT, () => {
+    console.log(`Example app listening on http://localhost:${PORT}`);
 });
