@@ -12,7 +12,7 @@ function assertAdmin(student) {
     if (!student?.admin) {
         /** @type {HttpError} */
         const err = {
-            ...new Error('failed admin assertion'),
+            message: 'failed admin assertion',
             status: 403,
         };
         throw err;
@@ -20,7 +20,7 @@ function assertAdmin(student) {
 }
 
 /**
- * Assert admin, used for type inferrence
+ * Assert student, used for type inferrence
  * @param {(Student & { admin: Admin | null}) | null} student
  * @returns {asserts student is Student & { admin: Admin | null }}
  */
@@ -28,8 +28,8 @@ function assertStudent(student) {
     if (!student) {
         /** @type {HttpError} */
         const err = {
-            ...new Error('failed student assertion'),
-            status: 401,
+            message: 'failed student assertion',
+            status: 403,
         };
         throw err;
     }

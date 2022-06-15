@@ -7,7 +7,8 @@ declare global {
         }
     }
 
-    interface HttpError extends Error {
+    interface HttpError {
+        message?: string;
         status?: number;
     }
 }
