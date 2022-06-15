@@ -1,35 +1,97 @@
+const { assertStudent } = require('auth/assert');
 const express = require('express');
 const userRoutes = express.Router();
 const client = require('../../db');
-const { blacklist } = require('../../db');
-const blackList = require('../../db/blacklist');
-const { recept } = require('../../db/recept');
-// const { verifyAdmin } = require('../../auth/admin');
-
 
 // get the student who has just logged in
-userRoutes.get('/:uid', (req, res) => {
+userRoutes.get('/', (req, res) => {
+    assertStudent(req.user);
     // TODO: get user information?
     res.status(200);
-    res.send(req.body.user);
+    res.send(req.user);
 });
 
 // add a student with uid to the reception list
-userRoutes.post('/:uid/recept', async (req, res) => {
+userRoutes.post('/:uid/checkin', async (req, res) => {
+    assertStudent(req.user);
+
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
-        res.status(400);
-        res.send('uid must be a number');
-        return;
-    } else if(uid !== req.body.id) {
-        res.status(400);
-        res.send('uid not found');
-        return;
+        throw { ...new Error('uid must be a number'), status: 400 };
     }
-    const reception = await recept(uid, req.body.user);
-    console.log("REQ Body => ", req.body);
+
+    if (req.body.seatId === undefined) {
+        throw { ...new Error('missing seat in body'), status: 400 };
+    }
+
+    const seatId = parseInt(req.body.seatId);
+    if (isNaN(seatId)) {
+        throw { ...new Error('seat must be a number'), status: 400 };
+    }
+
+    if (!req.user.admin && uid !== req.user.id) {
+        throw {
+            ...new Error('only admin or self-checkin are allowed'),
+            status: 403,
+        };
+    }
+
+    const existingCheckIns = await client.seat
+        .findUnique({ where: { id: seatId } })
+        .checkins({ where: { checkout: null } });
+
+    if (existingCheckIns.length > 0) {
+        throw { ...new Error('seat already occupied'), status: 409 };
+    }
+
+    const checkin = await client.checkin.create({
+        data: {
+            studentId: uid,
+            authorId: req.user.id,
+            seatId: seatId,
+        },
+    });
+
     res.status(200);
-    res.send(reception);
+    res.send(checkin);
 });
 
-module.exports = userRoutes ;
+// add a student with uid to the reception list
+userRoutes.post('/:uid/checkout', async (req, res) => {
+    assertStudent(req.user);
+
+    const uid = parseInt(req.params.uid);
+    if (isNaN(uid)) {
+        throw { ...new Error('uid must be a number'), status: 400 };
+    }
+
+    if (!req.user.admin && uid !== req.user.id) {
+        throw {
+            ...new Error('only admin or self-checkin are allowed'),
+            status: 403,
+        };
+    }
+
+    const currentlyCheckins = await client.student
+        .findUnique({ where: { id: uid } })
+        .checkins({
+            where: { checkout: null },
+            orderBy: { createdAt: 'desc' },
+        });
+
+    if (currentlyCheckins.length == 0) {
+        throw { ...new Error('user not checked in'), status: 400 };
+    }
+
+    const checkout = await client.checkout.create({
+        data: {
+            checkinId: currentlyCheckins[0].createdAt,
+            authorId: req.user.id,
+        },
+    });
+
+    res.status(200);
+    res.send(checkout);
+});
+
+module.exports = userRoutes;
