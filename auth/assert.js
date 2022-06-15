@@ -13,7 +13,7 @@ function assertAdmin(student) {
         /** @type {HttpError} */
         const err = {
             ...new Error('failed admin assertion'),
-            status: 401,
+            status: 403,
         };
         throw err;
     }
