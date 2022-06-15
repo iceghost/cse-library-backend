@@ -6,4 +6,8 @@ declare global {
             user: (Student & { admin: Admin | null }) | null;
         }
     }
+
+    interface HttpError extends Error {
+        status?: number;
+    }
 }

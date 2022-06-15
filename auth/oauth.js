@@ -1,5 +1,3 @@
-// @ts-check
-
 const { OAuth2Client } = require('google-auth-library');
 const CLIENT_ID =
     '535868303715-5hnlm9eolhmgusl796sm5mujbp7h87qh.apps.googleusercontent.com';
@@ -14,7 +12,8 @@ async function verify(token) {
         audience: CLIENT_ID,
     });
     const payload = ticket.getPayload();
-    const email = payload['email'];
+    const email = payload?.email;
+    if (!email) throw new Error('cannot decode email from payload');
     return email;
 }
 

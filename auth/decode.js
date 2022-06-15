@@ -1,5 +1,3 @@
-// @ts-check
-
 const { login } = require('../db/login');
 
 /**
@@ -7,15 +5,12 @@ const { login } = require('../db/login');
  * @param {import("express").Response} res
  * @param {import("express").NextFunction} next
  */
-async function verifyEmail(req, res, next) {
+async function decodeEmail(req, res, next) {
     const email = req.signedCookies['email'];
-    if (!email) {
-        res.status(401);
-        res.send('no email found in cookie');
-        return;
+    if (email) {
+        req.user = await login(email);
     }
-    req.body['user'] = await login(email);
     next();
 }
 
-module.exports = { verifyEmail };
+module.exports = { decodeEmail };
