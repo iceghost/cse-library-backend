@@ -6,12 +6,10 @@
  * @param {import("express").NextFunction} next
  */
 function errorHandler(error, request, response, next) {
+    console.error(error);
     const status = error.status || 500;
     const message = error.message || 'Something went wrong';
-    response.status(status).send({
-        status,
-        message,
-    });
+    response.status(status).send(message);
 }
 
-export { errorHandler };
+module.exports = errorHandler;
