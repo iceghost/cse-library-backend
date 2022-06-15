@@ -1,16 +1,4 @@
-// @ts-check
-
 const client = require('.');
-
-/**
- * @param {import('@prisma/client').Student} student
- */
-async function isAdmin(student) {
-    const admin = await client.admin.findUnique({
-        where: { id: student.id },
-    });
-    return Boolean(admin);
-}
 
 /**
  * @param {number} id
@@ -28,4 +16,4 @@ async function promoteAdmin(id) {
     });
 }
 
-module.exports = { isAdmin, promoteAdmin };
+module.exports = { promoteAdmin };

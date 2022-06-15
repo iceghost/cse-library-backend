@@ -7,9 +7,9 @@ generator client {
     provider = "prisma-client-js"
 }
 
-model Student {
-    email    String      @id
-    id       Int         @unique
+model User {
+    email    String    @id
+    id       Int       @unique
     fname    String
     lname    String
     // additional infos
@@ -19,30 +19,59 @@ model Student {
     password String?
     // admin subclass
     admin    Admin?
+
     // activity logs
-    entries  Reception[]
+    blacklist         Blacklist?
+    checkins          Checkin[]
+    authoredCheckins  Checkin[]  @relation("checkin author")
+    authoredCheckouts Checkout[]
 }
 
 model Admin {
-    // student id of admin
-    id         Int         @id
-    student    Student     @relation(fields: [id], references: [id])
-    // created logs
-    receptions Reception[]
+    // user id of admin
+    id   Int  @id
+    user User @relation(fields: [id], references: [id])
+
+    authoredBlacklist Blacklist[]
 }
 
 // checking in/out event
-model Reception {
+model Checkin {
+    createdAt DateTime  @id @default(now())
+    userId    Int
+    user      User      @relation(fields: [userId], references: [id])
+    // the one in charge of card swiping.
+    authorId  Int
+    // one could self-recept, hence user not admin
+    author    User      @relation("checkin author", fields: [authorId], references: [id])
+    // seat number
+    seatId    Int
+    seat      Seat      @relation(fields: [seatId], references: [id])
+    checkout  Checkout?
+}
+
+model Checkout {
     createdAt DateTime @id @default(now())
-    studentId Int
-    student   Student  @relation(fields: [studentId], references: [id])
-    // the one in charge of card swiping
-    adminId   Int
-    admin     Admin    @relation(fields: [adminId], references: [id])
+    // the one in charge of card swiping.
+    authorId  Int
+    // one could self-recept, hence user not admin
+    author    User     @relation(fields: [authorId], references: [id])
+    // corresponding checkin
+    checkinId DateTime @unique
+    checkin   Checkin  @relation(fields: [checkinId], references: [createdAt])
+}
+
+model Seat {
+    id       Int       @id
+    checkins Checkin[]
 }
 
 model Blacklist {
     createdAt DateTime  @default(now())
     expiredAt DateTime?
-    studentId Int       @id
+    userId    Int       @id
+    user      User      @relation(fields: [userId], references: [id])
+    // one who issues this blacklist
+    authorId  Int
+    author    Admin     @relation(fields: [authorId], references: [id])
 }

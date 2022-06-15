@@ -1,5 +1,3 @@
-// @ts-check
-
 /**
  * @param {import('express').Request} req
  * @param {import('express').Response} res
