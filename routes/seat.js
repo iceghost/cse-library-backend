@@ -8,15 +8,11 @@ router.get('/seats', async (req, res) => {
             checkins: {
                 select: { student: { select: { fname: true } } },
                 orderBy: { createdAt: 'desc' },
+                take: 1,
             },
         },
     });
-    res.status(200).send(
-        seats.map(({ id, checkins }) => ({
-            id,
-            ...checkins[0],
-        }))
-    );
+    res.status(200).send(seats);
 });
 
 module.exports = router;

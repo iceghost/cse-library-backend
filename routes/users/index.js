@@ -74,6 +74,7 @@ userRoutes.post('/:uid/checkout', async (req, res) => {
         .checkins({
             where: { checkout: null },
             orderBy: { createdAt: 'desc' },
+            take: 1,
         });
 
     if (currentlyCheckins.length == 0) {
