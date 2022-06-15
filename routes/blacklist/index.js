@@ -1,18 +1,24 @@
 const { assertAdmin } = require('../../auth/assert');
 const express = require('express');
-const adminRoutes = express.Router();
 const client = require('../../db');
 const blackList = require('../../db/blacklist');
 // const { verifyAdmin } = require('../../auth/admin');
 
-adminRoutes.get('/blacklist', async (req, res) => {
+/**
+ * get all student in blacklist
+ * @type {import('express').Handler}
+ */
+const getAllHandler = async (req, res) => {
     assertAdmin(req.user);
     res.status(200);
     res.send(await blackList.blackListGetAll());
-});
+};
 
-//admin add 1 student to blacklist or delete it from blacklist
-adminRoutes.post('/blacklist/:uid', async (req, res) => {
+/**
+ * admin add 1 student to blacklist or delete it from blacklist
+ * @type {import('express').Handler}
+ */
+const postOneHandler = async (req, res) => {
     assertAdmin(req.user);
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
@@ -25,9 +31,10 @@ adminRoutes.post('/blacklist/:uid', async (req, res) => {
     // console.log("Admin => ", req.body.user);
     res.status(200);
     res.send(blacklist);
-});
+};
 
-adminRoutes.delete('/blacklist/:uid', async (req, res) => {
+/** @type {import('express').Handler} */
+const deleteOneHandler = async (req, res) => {
     assertAdmin(req.user);
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
@@ -48,14 +55,20 @@ adminRoutes.delete('/blacklist/:uid', async (req, res) => {
     console.log('After delete 1 stu ', blacklist);
     res.status(200);
     res.send(client.blacklist);
-});
+};
 
-adminRoutes.delete('/blacklist', async (req, res) => {
+/** @type {import('express').Handler} */
+const deleteAllHandler = async (req, res) => {
     assertAdmin(req.user);
     const blacklist = await blackList.blackListDeleteAll(req.user.admin);
     // console.log("Admin => ", req.body.user);
     res.status(200);
     res.send(blacklist);
-});
+};
 
-module.exports = adminRoutes;
+const blacklistRouter = express.Router();
+blacklistRouter.get('/', getAllHandler);
+blacklistRouter.post('/:uid', postOneHandler);
+blacklistRouter.delete('/:uid', deleteOneHandler);
+blacklistRouter.delete('/', deleteAllHandler);
+module.exports = blacklistRouter;
