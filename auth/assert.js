@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@prisma/client').Student} Student
+ * @typedef {import('@prisma/client').User} User
  * @typedef {import('@prisma/client').Admin} Admin
  */
 
@@ -12,7 +12,7 @@ const client = require('../db');
 const decodeEmail = async (req, _, next) => {
     const email = req.signedCookies['email'];
     if (email) {
-        req.user = await client.student.findUnique({
+        req.user = await client.user.findUnique({
             where: { email },
             include: { admin: true },
         });
@@ -22,11 +22,11 @@ const decodeEmail = async (req, _, next) => {
 
 /**
  * Assert admin, used for type inferrence
- * @param {(Student & { admin: Admin | null}) | null} student
- * @returns {asserts student is Student & { admin: Admin }}
+ * @param {(User & { admin: Admin | null}) | null} user
+ * @returns {asserts user is User & { admin: Admin }}
  */
-function assertAdmin(student) {
-    if (!student?.admin) {
+function assertAdmin(user) {
+    if (!user?.admin) {
         /** @type {HttpError} */
         const err = {
             message: 'failed admin assertion',
@@ -37,19 +37,19 @@ function assertAdmin(student) {
 }
 
 /**
- * Assert student, used for type inferrence
- * @param {(Student & { admin: Admin | null}) | null} student
- * @returns {asserts student is Student & { admin: Admin | null }}
+ * Assert user, used for type inferrence
+ * @param {(User & { admin: Admin | null}) | null} user
+ * @returns {asserts user is User & { admin: Admin | null }}
  */
-function assertStudent(student) {
-    if (!student) {
+function assertUser(user) {
+    if (!user) {
         /** @type {HttpError} */
         const err = {
-            message: 'failed student assertion',
+            message: 'failed user assertion',
             status: 403,
         };
         throw err;
     }
 }
 
-module.exports = { assertAdmin, assertStudent, decodeEmail };
+module.exports = { assertAdmin, assertUser, decodeEmail };

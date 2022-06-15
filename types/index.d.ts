@@ -1,9 +1,9 @@
-import type { Student, Admin } from '@prisma/client';
+import type { User, Admin } from '@prisma/client';
 
 declare global {
     namespace Express {
         interface Request {
-            user: (Student & { admin: Admin | null }) | null;
+            user: (User & { admin: Admin | null }) | null;
         }
     }
 

@@ -38,12 +38,12 @@ const signupHandler = async (req, res) => {
             return;
         }
 
-        const student = await client.student.create({
+        const user = await client.user.create({
             data: { email, id: parsedId, lname, fname, password: hash, phone },
             include: { admin: true },
         });
         {
-            const { password, ...info } = student;
+            const { password, ...info } = user;
             res.status(200).send(info);
         }
     } catch (e) {

@@ -1,4 +1,4 @@
-const { assertStudent } = require('../../auth/assert');
+const { assertUser } = require('../../auth/assert');
 const client = require('../../db');
 
 /**
@@ -6,7 +6,7 @@ const client = require('../../db');
  * @param {import("express").Response} res
  */
 async function checkoutHandler(req, res) {
-    assertStudent(req.user);
+    assertUser(req.user);
 
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
@@ -17,7 +17,7 @@ async function checkoutHandler(req, res) {
         return res.status(403).send('only admin or self-checkin are allowed');
     }
 
-    const currentlyCheckins = await client.student
+    const currentlyCheckins = await client.user
         .findUnique({ where: { id: uid } })
         .checkins({
             where: { checkout: null },
@@ -45,7 +45,7 @@ async function checkoutHandler(req, res) {
  * @param {import("express").Response} res
  */
 async function checkinHandler(req, res) {
-    assertStudent(req.user);
+    assertUser(req.user);
 
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
@@ -75,7 +75,7 @@ async function checkinHandler(req, res) {
 
     const checkin = await client.checkin.create({
         data: {
-            studentId: uid,
+            userId: uid,
             authorId: req.user.id,
             seatId: seatId,
         },

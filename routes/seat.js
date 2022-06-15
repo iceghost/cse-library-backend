@@ -6,7 +6,7 @@ router.get('/seats', async (req, res) => {
     const seats = await client.seat.findMany({
         include: {
             checkins: {
-                select: { student: { select: { fname: true } } },
+                select: { user: { select: { fname: true } } },
                 orderBy: { createdAt: 'desc' },
                 take: 1,
             },

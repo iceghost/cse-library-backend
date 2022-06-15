@@ -1,4 +1,4 @@
-const { assertStudent } = require('../../auth/assert');
+const { assertUser } = require('../../auth/assert');
 const express = require('express');
 const { checkinHandler, checkoutHandler } = require('./checkinout');
 const signupHandler = require('../session/signup');
@@ -9,9 +9,9 @@ userRoutes.post('/', signupHandler);
 userRoutes.post('/:uid/checkin', checkinHandler);
 userRoutes.post('/:uid/checkout', checkoutHandler);
 
-// get the student who has just logged in
+// get the user who has just logged in
 userRoutes.get('/', (req, res) => {
-    assertStudent(req.user);
+    assertUser(req.user);
     const { password, ...info } = req.user;
     res.status(200).send(info);
 });

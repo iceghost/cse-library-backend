@@ -14,17 +14,17 @@ const googleHandler = async (req, res) => {
         if (payload?.email === undefined)
             throw new Error('cannot decode payload');
 
-        let student = await client.student.findUnique({
+        let user = await client.user.findUnique({
             where: { email: payload.email },
             include: { admin: true },
         });
 
-        if (!student) {
+        if (!user) {
             res.status(404).send('email not found');
             return;
         }
 
-        const { password, ...info } = student;
+        const { password, ...info } = user;
 
         res.cookie('email', payload.email, {
             maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -51,16 +51,16 @@ const passwordHandler = async (req, res) => {
         return;
     }
 
-    const student = await client.student.findUnique({
+    const user = await client.user.findUnique({
         where: { email },
         include: { admin: true },
     });
-    if (!student) {
+    if (!user) {
         res.status(401).send('email not exist');
         return;
     }
 
-    let ok = await bcrypt.compare(password ?? '', student.password ?? '');
+    let ok = await bcrypt.compare(password ?? '', user.password ?? '');
     if (!ok) {
         res.status(401).send('password mismatch');
         return;
@@ -72,7 +72,7 @@ const passwordHandler = async (req, res) => {
     });
 
     {
-        const { password, ...info } = student;
+        const { password, ...info } = user;
         res.status(200).send(info);
     }
 };

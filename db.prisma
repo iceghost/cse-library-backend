@@ -7,7 +7,7 @@ generator client {
     provider = "prisma-client-js"
 }
 
-model Student {
+model User {
     email    String    @id
     id       Int       @unique
     fname    String
@@ -28,9 +28,9 @@ model Student {
 }
 
 model Admin {
-    // student id of admin
-    id      Int     @id
-    student Student @relation(fields: [id], references: [id])
+    // user id of admin
+    id   Int  @id
+    user User @relation(fields: [id], references: [id])
 
     authoredBlacklist Blacklist[]
 }
@@ -38,12 +38,12 @@ model Admin {
 // checking in/out event
 model Checkin {
     createdAt DateTime  @id @default(now())
-    studentId Int
-    student   Student   @relation(fields: [studentId], references: [id])
+    userId    Int
+    user      User      @relation(fields: [userId], references: [id])
     // the one in charge of card swiping.
     authorId  Int
-    // one could self-recept, hence student not admin
-    author    Student   @relation("checkin author", fields: [authorId], references: [id])
+    // one could self-recept, hence user not admin
+    author    User      @relation("checkin author", fields: [authorId], references: [id])
     // seat number
     seatId    Int
     seat      Seat      @relation(fields: [seatId], references: [id])
@@ -54,8 +54,8 @@ model Checkout {
     createdAt DateTime @id @default(now())
     // the one in charge of card swiping.
     authorId  Int
-    // one could self-recept, hence student not admin
-    author    Student  @relation(fields: [authorId], references: [id])
+    // one could self-recept, hence user not admin
+    author    User     @relation(fields: [authorId], references: [id])
     // corresponding checkin
     checkinId DateTime @unique
     checkin   Checkin  @relation(fields: [checkinId], references: [createdAt])
@@ -69,8 +69,8 @@ model Seat {
 model Blacklist {
     createdAt DateTime  @default(now())
     expiredAt DateTime?
-    studentId Int       @id
-    student   Student   @relation(fields: [studentId], references: [id])
+    userId    Int       @id
+    user      User      @relation(fields: [userId], references: [id])
     // one who issues this blacklist
     authorId  Int
     author    Admin     @relation(fields: [authorId], references: [id])

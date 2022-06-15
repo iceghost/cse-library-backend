@@ -5,7 +5,7 @@ const blackList = require('../../db/blacklist');
 // const { verifyAdmin } = require('../../auth/admin');
 
 /**
- * get all student in blacklist
+ * get all user in blacklist
  * @type {import('express').Handler}
  */
 const getAllHandler = async (req, res) => {
@@ -15,7 +15,7 @@ const getAllHandler = async (req, res) => {
 };
 
 /**
- * admin add 1 student to blacklist or delete it from blacklist
+ * admin add 1 user to blacklist or delete it from blacklist
  * @type {import('express').Handler}
  */
 const postOneHandler = async (req, res) => {
@@ -44,12 +44,12 @@ const deleteOneHandler = async (req, res) => {
     }
     // const admin = await promoteAdmin(uid);
     var blacklist;
-    var student = await blackList.blackListGetOne(uid);
-    if (student && uid === student.studentId) {
+    var user = await blackList.blackListGetOne(uid);
+    if (user && uid === user.userId) {
         blacklist = await blackList.blackListDeleteOne(uid, req.user.admin);
     } else {
         res.status(400);
-        res.send('student is not in the list');
+        res.send('user is not in the list');
     }
     // const blacklist = await blackList.blackListDeleteAll();
     console.log('After delete 1 stu ', blacklist);

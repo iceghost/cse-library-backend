@@ -7,7 +7,7 @@ const client = require('.');
 async function blackListCreate(uid, author) {
     const blacklist = await client.blacklist.create({
         data: {
-            studentId: uid,
+            userId: uid,
             authorId: author.id,
         },
     });
@@ -25,11 +25,11 @@ async function blackListGetAll() {
  * @param {number} id
  */
 async function blackListGetOne(id) {
-    const the_student = await client.blacklist.findUnique({
-        where: { studentId: id },
+    const the_user = await client.blacklist.findUnique({
+        where: { userId: id },
     });
 
-    return the_student;
+    return the_user;
 }
 
 /**
@@ -38,7 +38,7 @@ async function blackListGetOne(id) {
  */
 async function blackListDeleteOne(id, admin) {
     const blacklist = await client.blacklist.update({
-        where: { studentId: id },
+        where: { userId: id },
         data: { expiredAt: new Date(), authorId: admin.id },
     });
     return blacklist;
