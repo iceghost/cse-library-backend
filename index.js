@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     res.sendFile('index.html');
 });
 app.post('/users', require('./routes/session/signup'));
-app.post('/session', require('./routes/session/login'));
+app.use('/session', require('./routes/session/login'));
 app.use(['/seat', '/seats'], require('./routes/seat'));
 app.use(['/user', '/users'], require('./routes/users'));
 app.use('/blacklist', require('./routes/blacklist'));
