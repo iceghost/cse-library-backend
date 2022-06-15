@@ -2,7 +2,7 @@ const express = require('express');
 const client = require('../db');
 const router = express.Router();
 
-router.get('/seats', async (req, res) => {
+router.get('/', async (req, res) => {
     const seats = await client.seat.findMany({
         include: {
             checkins: {
