@@ -21,9 +21,10 @@ model Student {
     admin    Admin?
 
     // activity logs
-    receptions         Reception[] @relation("student")
-    authoredReceptions Reception[] @relation("author")
-    blacklist          Blacklist?
+    blacklist         Blacklist?
+    checkins          Checkin[]
+    authoredCheckins  Checkin[]  @relation("checkin author")
+    authoredCheckouts Checkout[]
 }
 
 model Admin {
@@ -35,16 +36,34 @@ model Admin {
 }
 
 // checking in/out event
-model Reception {
-    createdAt DateTime @id @default(now())
+model Checkin {
+    createdAt DateTime  @id @default(now())
     studentId Int
-    student   Student  @relation("student", fields: [studentId], references: [id])
+    student   Student   @relation(fields: [studentId], references: [id])
     // the one in charge of card swiping.
     authorId  Int
     // one could self-recept, hence student not admin
-    author    Student  @relation("author", fields: [authorId], references: [id])
+    author    Student   @relation("checkin author", fields: [authorId], references: [id])
     // seat number
-    seat      Int
+    seatId    Int
+    seat      Seat      @relation(fields: [seatId], references: [id])
+    checkout  Checkout?
+}
+
+model Checkout {
+    createdAt DateTime @id @default(now())
+    // the one in charge of card swiping.
+    authorId  Int
+    // one could self-recept, hence student not admin
+    author    Student  @relation(fields: [authorId], references: [id])
+    // corresponding checkin
+    checkinId DateTime @unique
+    checkin   Checkin  @relation(fields: [checkinId], references: [createdAt])
+}
+
+model Seat {
+    id       Int       @id
+    checkins Checkin[]
 }
 
 model Blacklist {
