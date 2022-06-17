@@ -52,7 +52,7 @@ async function main() {
             email: `${x}@hcmut.edu.vn`,
             id: x.charCodeAt(0),
             fname: `${x}`,
-            lname: `lname ${x}`,
+            lname: `Nguyễn Văn`,
             password: await hash(`${x}1234`),
         };
         await prisma.user.upsert({
