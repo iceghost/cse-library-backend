@@ -45,8 +45,8 @@ model Checkin {
     // one could self-recept, hence user not admin
     author    User      @relation("checkin author", fields: [authorId], references: [id])
     // seat number
-    seatId    Int
-    seat      Seat      @relation(fields: [seatId], references: [id])
+    seatId    Int?
+    seat      Seat?     @relation(fields: [seatId], references: [id])
     checkout  Checkout?
 }
 

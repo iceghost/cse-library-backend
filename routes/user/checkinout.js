@@ -52,32 +52,14 @@ async function checkinHandler(req, res) {
         return res.status(400).send('uid must be a number');
     }
 
-    if (req.body.seatId === undefined) {
-        return res.status(400).send('missing seat in body');
-    }
-
-    const seatId = parseInt(req.body.seatId);
-    if (isNaN(seatId)) {
-        return res.status(400).send('seat must be a number');
-    }
-
     if (!req.user.admin && uid !== req.user.id) {
         return res.status(403).send('only admin or self-checkin are allowed');
-    }
-
-    const existingCheckIns = await client.seat
-        .findUnique({ where: { id: seatId } })
-        .checkins({ where: { checkout: null } });
-
-    if (existingCheckIns.length > 0) {
-        return res.status(409).send('seat already occupied');
     }
 
     const checkin = await client.checkin.create({
         data: {
             userId: uid,
             authorId: req.user.id,
-            seatId: seatId,
         },
     });
 
