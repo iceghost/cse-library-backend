@@ -18,6 +18,9 @@ const prisma = new PrismaClient();
 const hash = async (password) => await bcrypt.hash(password, 10);
 
 async function main() {
+    // await prisma.checkout.deleteMany();
+    // await prisma.checkin.deleteMany();
+
     const khang = {
         email: 'khang.nguyenduycse@hcmut.edu.vn',
         id: 101,

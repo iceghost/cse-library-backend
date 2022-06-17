@@ -37,7 +37,8 @@ model Admin {
 
 // checking in/out event
 model Checkin {
-    createdAt DateTime  @id @default(now())
+    id        Int       @id @default(autoincrement())
+    createdAt DateTime  @default(now())
     userId    Int
     user      User      @relation(fields: [userId], references: [id])
     // the one in charge of card swiping.
@@ -51,14 +52,15 @@ model Checkin {
 }
 
 model Checkout {
-    createdAt DateTime @id @default(now())
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
     // the one in charge of card swiping.
     authorId  Int
     // one could self-recept, hence user not admin
     author    User     @relation(fields: [authorId], references: [id])
     // corresponding checkin
-    checkinId DateTime @unique
-    checkin   Checkin  @relation(fields: [checkinId], references: [createdAt])
+    checkinId Int      @unique
+    checkin   Checkin  @relation(fields: [checkinId], references: [id])
 }
 
 model Seat {

@@ -1,6 +1,10 @@
 const express = require('express');
 const { assertUser } = require('../auth/assert');
 const client = require('../db');
+const {
+    getLatestCheckinByUser,
+    getLatestCheckinBySeat,
+} = require('../db/checkin');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -35,34 +39,20 @@ router.put('/:seatId', async (req, res) => {
         return;
     }
 
-    const userCheckin = (
-        await client.user.findUnique({ where: { id: req.user.id } }).checkins({
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-            include: { checkout: true },
-        })
-    ).pop();
-
+    const userCheckin = await getLatestCheckinByUser(req.user.id);
     if (!userCheckin || userCheckin.checkout) {
         res.status(403).send('you must check in first to choose seat');
         return;
     }
 
-    const seatCheckin = (
-        await client.seat.findUnique({ where: { id: seatId } }).checkins({
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-            include: { checkout: true },
-        })
-    ).pop();
-
+    const seatCheckin = await getLatestCheckinBySeat(seatId);
     if (seatCheckin && !seatCheckin.checkout) {
         res.status(409).send('seat already occupied');
         return;
     }
 
     const seat = await client.checkin.update({
-        where: { createdAt: userCheckin.createdAt },
+        where: { id: userCheckin.id },
         data: { seatId },
     });
 

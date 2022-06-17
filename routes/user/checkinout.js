@@ -1,5 +1,6 @@
 const { assertUser } = require('../../auth/assert');
 const client = require('../../db');
+const { getLatestCheckinByUser } = require('../../db/checkin');
 
 /**
  * @param {import("express").Request} req
@@ -17,21 +18,14 @@ async function checkoutHandler(req, res) {
         return res.status(403).send('only admin or self-checkin are allowed');
     }
 
-    const currentlyCheckins = await client.user
-        .findUnique({ where: { id: uid } })
-        .checkins({
-            where: { checkout: null },
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-        });
-
-    if (currentlyCheckins.length == 0) {
+    const latestCheckin = await getLatestCheckinByUser(uid);
+    if (!latestCheckin || latestCheckin.checkout) {
         return res.status(400).send('user not checked in');
     }
 
     const checkout = await client.checkout.create({
         data: {
-            checkinId: currentlyCheckins[0].createdAt,
+            checkinId: latestCheckin.id,
             authorId: req.user.id,
         },
     });
@@ -54,6 +48,12 @@ async function checkinHandler(req, res) {
 
     if (!req.user.admin && uid !== req.user.id) {
         return res.status(403).send('only admin or self-checkin are allowed');
+    }
+
+    const latestCheckin = await getLatestCheckinByUser(uid);
+    if (latestCheckin && !latestCheckin.checkout) {
+        res.status(409).send('already checked in');
+        return;
     }
 
     const checkin = await client.checkin.create({
