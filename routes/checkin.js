@@ -22,6 +22,7 @@ router.get('/', async (req, res) => {
 
     const from = parse('from');
     const to = parse('to');
+    const checkout = !Boolean(req.query.checkout);
 
     const checkins = await client.checkin.findMany({
         where: {
@@ -29,10 +30,22 @@ router.get('/', async (req, res) => {
                 gte: from === undefined ? undefined : new Date(from),
                 lte: to === undefined ? undefined : new Date(to),
             },
+            ...(checkout
+                ? {}
+                : {
+                      checkout: null,
+                  }),
         },
         select: {
             createdAt: true,
             id: true,
+            user: {
+                select: {
+                    id: true,
+                    fname: true,
+                    lname: true,
+                },
+            },
             checkout: {
                 select: {
                     createdAt: true,
