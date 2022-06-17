@@ -47,7 +47,7 @@ const passwordHandler = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        res.set(400).send('body must include email and password');
+        res.status(400).send('body must include email and password');
         return;
     }
 

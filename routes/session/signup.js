@@ -11,7 +11,7 @@ const signupHandler = async (req, res) => {
     const { email, id, lname, fname, password, phone } = req.body;
     const hash = await bcrypt.hash(
         password ?? '',
-        process.env['SALT_ROUNDS'] || 10
+        parseInt(process.env['SALT_ROUNDS'] || '') || 10
     );
 
     if (email === undefined) {
