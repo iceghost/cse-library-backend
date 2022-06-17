@@ -26,11 +26,15 @@ const postOneHandler = async (req, res) => {
         res.send('uid must be a number');
         return;
     }
-    var blacklist = await blackList.blackListCreate(uid, req.user.admin);
-    // const blacklist = await blackList.blackListDeleteAll();
-    // console.log("Admin => ", req.body.user);
-    res.status(200);
-    res.send(blacklist);
+    try {
+        var blacklist = await blackList.blackListCreate(uid, req.user.admin);
+        // const blacklist = await blackList.blackListDeleteAll();
+        // console.log("Admin => ", req.body.user);
+        res.status(200);
+        res.send(blacklist);
+    } catch (e) {
+        res.status(400).send("user already in blacklist");
+    }
 };
 
 /** @type {import('express').Handler} */

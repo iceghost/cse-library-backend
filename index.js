@@ -30,6 +30,7 @@ app.use(require('./auth/assert').decodeEmail);
 app.get('/', (req, res) => {
     res.sendFile('index.html');
 });
+app.get('/users', require('./routes/user/get_all'));
 app.post('/users', require('./routes/session/signup'));
 app.delete('/session', require('./routes/session/logout'));
 app.use('/session', require('./routes/session/login'));

@@ -5,10 +5,15 @@ const client = require('.');
  * @param {import('@prisma/client').Admin} author
  */
 async function blackListCreate(uid, author) {
-    const blacklist = await client.blacklist.create({
-        data: {
+    const blacklist = await client.blacklist.upsert({
+        where: { userId: uid },
+        create: {
             userId: uid,
             authorId: author.id,
+        },
+        update: {
+            createdAt: new Date(),
+            expiredAt: null,
         },
     });
     return blacklist;
