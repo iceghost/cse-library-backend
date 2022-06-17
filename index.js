@@ -3,7 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
-const whitelist = ['http://localhost:3000', 'https://eb2d-123-20-186-132.ap.ngrok.io'];
+const whitelist = [
+    'http://localhost:3000',
+    'https://eb2d-123-20-186-132.ap.ngrok.io',
+];
 
 app.use(
     require('cors')({
@@ -32,6 +35,7 @@ app.delete('/session', require('./routes/session/logout'));
 app.use('/session', require('./routes/session/login'));
 app.use(['/seat', '/seats'], require('./routes/seat'));
 app.use(['/user', '/users'], require('./routes/user'));
+app.use(['/checkin', '/checkins'], require('./routes/checkin'));
 app.use('/blacklist', require('./routes/blacklist'));
 app.use(require('./auth/error_handler'));
 

@@ -52,14 +52,13 @@ model Checkin {
 }
 
 model Checkout {
-    id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
     // the one in charge of card swiping.
     authorId  Int
     // one could self-recept, hence user not admin
     author    User     @relation(fields: [authorId], references: [id])
     // corresponding checkin
-    checkinId Int      @unique
+    checkinId Int      @id
     checkin   Checkin  @relation(fields: [checkinId], references: [id])
 }
 
