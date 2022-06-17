@@ -47,16 +47,21 @@ const passwordHandler = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        res.set(400).send('body must include email and password');
+        res.status(400).send('body must include email and password');
         return;
     }
 
     const user = await client.user.findUnique({
         where: { email },
-        include: { admin: true },
+        include: { admin: true, blacklist: true },
     });
     if (!user) {
         res.status(401).send('email not exist');
+        return;
+    }
+
+    if (user.blacklist) {
+        res.status(403).send('you have been blacklisted :(');
         return;
     }
 
