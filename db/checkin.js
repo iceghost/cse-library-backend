@@ -1,30 +1,28 @@
 const client = require('.');
 
 /**
- * @param {number} userId
+ * @param {import('@prisma/client').User} user
  */
-async function getLatestCheckinByUser(userId) {
-    const userCheckin = (
-        await client.user.findUnique({ where: { id: userId } }).checkins({
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-            include: { checkout: true },
-        })
-    ).pop();
+async function getLatestCheckinByUser(user) {
+    const userCheckin = await client.checkin.findFirst({
+        where: { userId: user.id },
+        // orderBy: { createdAt: 'desc' },
+        take: -1,
+        include: { checkout: true },
+    });
     return userCheckin;
 }
 
 /**
- * @param {number} seatId
+ * @param {import('@prisma/client').Seat} seat
  */
-async function getLatestCheckinBySeat(seatId) {
-    const seatCheckin = (
-        await client.seat.findUnique({ where: { id: seatId } }).checkins({
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-            include: { checkout: true },
-        })
-    ).pop();
+async function getLatestCheckinBySeat(seat) {
+    const seatCheckin = await client.checkin.findFirst({
+        where: { seatId: seat.id },
+        // orderBy: { createdAt: 'desc' },
+        take: -1,
+        include: { checkout: true },
+    });
     return seatCheckin;
 }
 

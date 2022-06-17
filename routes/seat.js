@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
                     user: { select: { fname: true } },
                     checkout: true,
                 },
-                orderBy: { createdAt: 'desc' },
-                take: 1,
+                // orderBy: { createdAt: 'desc' },
+                take: -1,
             },
         },
     });
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
         const checkin = seat.checkins.pop();
         return {
             id: seat.id,
-            checkin: checkin?.checkout === null ? checkin : undefined,
+            checkin: checkin?.checkout === null ? checkin : null,
         };
     });
     res.status(200).send(currentSeats);
@@ -39,24 +39,36 @@ router.put('/:seatId', async (req, res) => {
         return;
     }
 
-    const userCheckin = await getLatestCheckinByUser(req.user.id);
+    const seat = await client.seat.findFirst({ where: { id: seatId } });
+    if (!seat) {
+        res.status(404).send('seat not found');
+        return;
+    }
+
+    const userCheckin = await getLatestCheckinByUser(req.user);
     if (!userCheckin || userCheckin.checkout) {
         res.status(403).send('you must check in first to choose seat');
         return;
     }
 
-    const seatCheckin = await getLatestCheckinBySeat(seatId);
+    const seatCheckin = await getLatestCheckinBySeat(seat);
     if (seatCheckin && !seatCheckin.checkout) {
         res.status(409).send('seat already occupied');
         return;
     }
 
-    const seat = await client.checkin.update({
+    const checkin = await client.checkin.update({
         where: { id: userCheckin.id },
         data: { seatId },
+        include: {
+            seat: true,
+        },
     });
 
-    res.status(200).send(seat);
+    res.status(200).send({
+        ...checkin.seat,
+        checkin,
+    });
 });
 
 module.exports = router;

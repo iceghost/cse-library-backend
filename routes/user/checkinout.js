@@ -18,7 +18,13 @@ async function checkoutHandler(req, res) {
         return res.status(403).send('only admin or self-checkin are allowed');
     }
 
-    const latestCheckin = await getLatestCheckinByUser(uid);
+    const user = await client.user.findUnique({ where: { id: uid }});
+    if (!user) {
+        res.status(404).send("user doesn't exist");
+        return;
+    }
+
+    const latestCheckin = await getLatestCheckinByUser(user);
     if (!latestCheckin || latestCheckin.checkout) {
         return res.status(400).send('user not checked in');
     }
@@ -50,7 +56,13 @@ async function checkinHandler(req, res) {
         return res.status(403).send('only admin or self-checkin are allowed');
     }
 
-    const latestCheckin = await getLatestCheckinByUser(uid);
+    const user = await client.user.findUnique({ where: { id: uid }});
+    if (!user) {
+        res.status(404).send("user doesn't exist");
+        return;
+    }
+
+    const latestCheckin = await getLatestCheckinByUser(user);
     if (latestCheckin && !latestCheckin.checkout) {
         res.status(409).send('already checked in');
         return;
