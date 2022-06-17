@@ -3,22 +3,27 @@ const client = require('../../db');
 const { getLatestCheckinByUser } = require('../../db/checkin');
 
 /**
- * @param {import("express").Request} req
- * @param {import("express").Response} res
+ * @type {import("express").Handler}
  */
-async function checkoutHandler(req, res) {
-    assertUser(req.user);
+async function checkoutHandler(req, res, next) {
+    try {
+        assertUser(req.user);
+    } catch (e) {
+        return next(e);
+    }
 
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
-        return res.status(400).send('uid must be a number');
+        res.status(400).send('uid must be a number');
+        return;
     }
 
     if (!req.user.admin && uid !== req.user.id) {
-        return res.status(403).send('only admin or self-checkin are allowed');
+        res.status(403).send('only admin or self-checkin are allowed');
+        return;
     }
 
-    const user = await client.user.findUnique({ where: { id: uid }});
+    const user = await client.user.findUnique({ where: { id: uid } });
     if (!user) {
         res.status(404).send("user doesn't exist");
         return;
@@ -26,7 +31,8 @@ async function checkoutHandler(req, res) {
 
     const latestCheckin = await getLatestCheckinByUser(user);
     if (!latestCheckin || latestCheckin.checkout) {
-        return res.status(400).send('user not checked in');
+        res.status(400).send('user not checked in');
+        return;
     }
 
     const checkout = await client.checkout.create({
@@ -41,22 +47,27 @@ async function checkoutHandler(req, res) {
 }
 
 /**
- * @param {import("express").Request} req
- * @param {import("express").Response} res
+ * @type {import('express').Handler}
  */
-async function checkinHandler(req, res) {
-    assertUser(req.user);
+async function checkinHandler(req, res, next) {
+    try {
+        assertUser(req.user);
+    } catch (e) {
+        return next(e);
+    }
 
     const uid = parseInt(req.params.uid);
     if (isNaN(uid)) {
-        return res.status(400).send('uid must be a number');
+        res.status(400).send('uid must be a number');
+        return;
     }
 
     if (!req.user.admin && uid !== req.user.id) {
-        return res.status(403).send('only admin or self-checkin are allowed');
+        res.status(403).send('only admin or self-checkin are allowed');
+        return;
     }
 
-    const user = await client.user.findUnique({ where: { id: uid }});
+    const user = await client.user.findUnique({ where: { id: uid } });
     if (!user) {
         res.status(404).send("user doesn't exist");
         return;
@@ -72,6 +83,9 @@ async function checkinHandler(req, res) {
         data: {
             userId: uid,
             authorId: req.user.id,
+        },
+        include: {
+            user: { select: { id: true, fname: true, lname: true } },
         },
     });
 

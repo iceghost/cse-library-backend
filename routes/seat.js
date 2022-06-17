@@ -12,8 +12,9 @@ router.get('/', async (req, res) => {
         include: {
             checkins: {
                 select: {
-                    user: { select: { fname: true } },
+                    user: { select: { fname: true, lname: true, id: true } },
                     checkout: true,
+                    createdAt: true,
                 },
                 // orderBy: { createdAt: 'desc' },
                 take: -1,
@@ -30,8 +31,12 @@ router.get('/', async (req, res) => {
     res.status(200).send(currentSeats);
 });
 
-router.put('/:seatId', async (req, res) => {
-    assertUser(req.user);
+router.put('/:seatId', async (req, res, next) => {
+    try {
+        assertUser(req.user);
+    } catch (e) {
+        return next(e);
+    }
 
     const seatId = parseInt(req.params.seatId);
     if (isNaN(seatId)) {
