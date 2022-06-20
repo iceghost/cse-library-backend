@@ -15,52 +15,23 @@ const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
 /** @param {string} password */
-const hash = async (password) => await bcrypt.hash(password, 10);
+const hash = async (password) =>
+    await bcrypt.hash(password, parseInt(process.env['SALT_ROUNDS'] || '5'));
 
 async function main() {
-    // await prisma.checkout.deleteMany();
-    // await prisma.checkin.deleteMany();
-
-    const khang = {
-        email: 'khang.nguyenduycse@hcmut.edu.vn',
-        id: 101,
-        fname: 'Khang',
-        lname: 'ND',
-        password: await hash('khang1234'),
+    const admin = {
+        email: 'admin',
+        id: 1,
+        fname: 'Admin',
+        lname: '',
+        password: await hash(process.env['ADMIN_PASSWORD'] || 'admin'),
     };
-    await prisma.user.upsert({
-        where: { email: khang.email },
-        update: khang,
-        create: { ...khang, admin: { create: {} } },
-    });
 
-    const nghi = {
-        email: 'nghi.nguyen1805vt@hcmut.edu.vn',
-        id: 100,
-        fname: 'Nghi',
-        lname: 'NDP',
-        password: await hash('nghi1234'),
-    };
     await prisma.user.upsert({
-        where: { email: nghi.email },
-        update: nghi,
-        create: { ...nghi, admin: { create: {} } },
+        where: { email: admin.email },
+        update: {},
+        create: { ...admin, admin: { create: {} } },
     });
-
-    for (const x of dummy()) {
-        const user = {
-            email: `${x}@hcmut.edu.vn`,
-            id: x.charCodeAt(0),
-            fname: `${x}`,
-            lname: `Nguyễn Văn`,
-            password: await hash(`${x}1234`),
-        };
-        await prisma.user.upsert({
-            where: { email: user.email },
-            update: user,
-            create: user,
-        });
-    }
 
     for (let seatId = 0; seatId <= 55; seatId++) {
         await prisma.seat.upsert({
